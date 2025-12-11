@@ -1,2 +1,2 @@
 # Softwaredev
-Dealing with builds mobile and desktop application. 
+Dealing with building of mobile and desktop application. 

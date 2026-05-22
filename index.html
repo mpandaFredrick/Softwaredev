@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FreLearn — Software Developer · Dar es Salaam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ══════════════════════════════════════════
+   THEME TOKENS — light & dark
+══════════════════════════════════════════ */
+:root{
+  --bg:        #F5F0E8;
+  --bg2:       #EDE8DE;
+  --bg3:       #E4DDD2;
+  --surface:   #FFFFFF;
+  --ink:       #0C0C0A;
+  --ink2:      #2E2C28;
+  --muted:     #8A8278;
+  --border:    rgba(12,12,10,.1);
+  --amber:     #C8783A;
+  --amber2:    #E8924A;
+  --green:     #2ECC71;
+  --shadow:    0 4px 24px rgba(12,12,10,.08);
+  --shadow-lg: 0 20px 60px rgba(12,12,10,.14);
+  --hd:'DM Serif Display',serif;
+  --bd:'Outfit',sans-serif;
+  --mo:'JetBrains Mono',monospace;
+}
+[data-theme="dark"]{
+  --bg:        #0F0E0C;
+  --bg2:       #161410;
+  --bg3:       #1E1B16;
+  --surface:   #1E1B16;
+  --ink:       #F0EBE1;
+  --ink2:      #C8BFB0;
+  --muted:     #6E685E;
+  --border:    rgba(240,235,225,.08);
+  --amber:     #D4864A;
+  --amber2:    #F09A5A;
+  --shadow:    0 4px 24px rgba(0,0,0,.3);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,.5);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--bd);
+  background:var(--bg);
+  color:var(--ink);
+  overflow-x:hidden;
+  cursor:none;
+  transition:background .35s ease,color .35s ease;
+}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--amber);border-radius:2px}
+
+/* ══ CUSTOM CURSOR ══ */
+.cur,.cur-r{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cur{width:10px;height:10px;background:var(--amber);border-radius:50%;transition:width .2s,height .2s,transform .1s;mix-blend-mode:multiply;z-index:9999}
+.cur-r{width:36px;height:36px;border:1.5px solid var(--amber);border-radius:50%;opacity:.4;z-index:9998;transition:transform .18s ease}
+[data-theme="dark"] .cur{mix-blend-mode:normal}
+
+/* ══ NAV ══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:18px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(245,240,232,.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  transition:background .35s,border-color .35s;
+}
+[data-theme="dark"] nav{background:rgba(15,14,12,.92)}
+
+.nav-brand{text-decoration:none;display:flex;align-items:center;gap:8px}
+.brand-logo svg{display:block}
+.brand-word{display:flex;align-items:baseline}
+.brand-word .fre{font-family:var(--hd);font-size:1.2rem;color:var(--ink);letter-spacing:-.5px;transition:color .35s}
+.brand-word .lrn{font-family:var(--hd);font-size:1.2rem;font-style:italic;color:var(--amber);letter-spacing:-.5px}
+
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:.73rem;font-weight:500;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--amber);transition:width .25s}
+.nav-links a:hover{color:var(--amber)}
+.nav-links a:hover::after{width:100%}
+
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-gh{
+  font-family:var(--mo);font-size:.67rem;
+  background:var(--ink);color:var(--bg);
+  padding:9px 18px;border-radius:4px;
+  text-decoration:none;
+  display:flex;align-items:center;gap:7px;
+  transition:background .2s,transform .15s;
+  border:1px solid transparent;
+}
+.nav-gh:hover{background:var(--amber);transform:translateY(-1px)}
+[data-theme="dark"] .nav-gh{background:rgba(240,235,225,.08);color:var(--ink2);border-color:var(--border)}
+[data-theme="dark"] .nav-gh:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+
+/* DARK/LIGHT TOGGLE */
+.theme-btn{
+  width:44px;height:24px;
+  background:var(--bg3);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  position:relative;
+  transition:background .3s,border-color .3s;
+  flex-shrink:0;
+}
+.theme-btn::after{
+  content:'';
+  position:absolute;top:2px;left:2px;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--amber);
+  transition:transform .3s ease, background .3s;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+[data-theme="dark"] .theme-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+[data-theme="dark"] .theme-btn::after{transform:translateX(20px);background:var(--amber2)}
+.theme-icon{font-size:.85rem;position:absolute;top:50%;transform:translateY(-50%);transition:opacity .3s}
+.theme-icon.sun{right:5px;opacity:1}
+.theme-icon.moon{left:5px;opacity:0}
+[data-theme="dark"] .theme-icon.sun{opacity:0}
+[data-theme="dark"] .theme-icon.moon{opacity:1}
+
+/* ══ PROGRESS BAR ══ */
+#progress{
+  position:fixed;top:0;left:0;height:2px;z-index:600;
+  background:linear-gradient(90deg,var(--amber),var(--amber2));
+  width:0%;transition:width .1s linear;
+}
+
+/* ══ HERO ══ */
+#hero{
+  min-height:100vh;
+  padding:150px 64px 100px;
+  display:grid;grid-template-columns:1.05fr 1fr;gap:64px;align-items:center;
+  position:relative;overflow:hidden;
+}
+.hero-bg-orb{
+  position:absolute;pointer-events:none;border-radius:50%;
+  filter:blur(80px);opacity:.35;
+  transition:opacity .35s;
+}
+.orb1{width:500px;height:500px;right:-100px;top:-100px;
+  background:radial-gradient(circle,var(--amber) 0%,transparent 70%);opacity:.12}
+.orb2{width:350px;height:350px;left:-80px;bottom:-80px;
+  background:radial-gradient(circle,var(--amber2) 0%,transparent 70%);opacity:.08}
+[data-theme="dark"] .orb1{opacity:.18}
+[data-theme="dark"] .orb2{opacity:.12}
+
+.hero-ring{
+  position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+  border-radius:50%;border:1px solid var(--border);pointer-events:none;transition:border-color .35s;
+}
+
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:var(--bg);
+  font-family:var(--mo);font-size:.65rem;letter-spacing:1.5px;
+  padding:7px 16px;border-radius:20px;margin-bottom:28px;
+  animation:slideIn .7s ease both;
+  transition:background .35s,color .35s;
+  box-shadow:var(--shadow);
+}
+.live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+.hero-brand{
+  font-family:var(--hd);
+  font-size:clamp(3.2rem,6.5vw,6.2rem);
+  line-height:.95;letter-spacing:-3px;
+  margin-bottom:10px;
+  animation:slideIn .8s ease .1s both;
+}
+.hero-brand .fre{color:var(--ink);transition:color .35s}
+.hero-brand .lrn{font-style:italic;color:var(--amber)}
+
+.hero-by{
+  font-family:var(--mo);font-size:.68rem;letter-spacing:3px;
+  color:var(--muted);margin-bottom:22px;
+  text-transform:uppercase;
+  animation:slideIn .8s ease .18s both;
+}
+.hero-subtitle{
+  font-family:var(--hd);font-style:italic;
+  font-size:clamp(1.1rem,2vw,1.65rem);
+  color:var(--muted);margin-bottom:26px;letter-spacing:-.3px;
+  animation:slideIn .8s ease .23s both;
+}
+.hero-desc{
+  font-size:.96rem;color:var(--ink2);line-height:1.9;
+  max-width:470px;margin-bottom:42px;
+  animation:slideIn .8s ease .3s both;
+  transition:color .35s;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;animation:slideIn .8s ease .38s both}
+
+.btn-primary{
+  background:var(--amber);color:#fff;
+  font-family:var(--bd);font-weight:600;font-size:.88rem;
+  padding:13px 30px;border-radius:6px;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:background .2s,transform .15s,box-shadow .2s;
+  box-shadow:0 4px 18px rgba(200,120,58,.35);
+}
+.btn-primary:hover{background:var(--amber2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,120,58,.45)}
+.btn-outline{
+  background:transparent;color:var(--ink);
+  font-family:var(--bd);font-weight:500;font-size:.88rem;
+  padding:13px 30px;border-radius:6px;
+  text-decoration:none;border:1.5px solid var(--border);cursor:pointer;
+  transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--amber);color:var(--amber);transform:translateY(-2px)}
+
+/* HERO STATS */
+.hero-stats{
+  display:flex;gap:36px;margin-top:48px;padding-top:36px;
+  border-top:1px solid var(--border);
+  animation:slideIn .8s ease .46s both;
+  transition:border-color .35s;
+}
+.stat-num{font-family:var(--hd);font-size:1.9rem;color:var(--amber);display:block;line-height:1}
+.stat-lbl{font-family:var(--mo);font-size:.62rem;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:4px}
+
+/* ID CARD */
+.id-card{
+  background:var(--ink);border-radius:16px;
+  padding:40px 36px;color:#F0EBE1;
+  position:relative;overflow:hidden;
+  animation:fadeUp .9s ease .35s both;
+  box-shadow:var(--shadow-lg);
+  transition:box-shadow .35s;
+}
+.id-card::before{content:'';position:absolute;top:-70px;right:-70px;width:220px;height:220px;border-radius:50%;background:rgba(200,120,58,.15)}
+.id-card::after{content:'';position:absolute;bottom:-40px;left:-40px;width:140px;height:140px;border-radius:50%;background:rgba(200,120,58,.07)}
+[data-theme="dark"] .id-card{background:#1A1714;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+
+.id-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px;position:relative;z-index:1}
+.id-logo{border-radius:10px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.id-badge{
+  font-family:var(--mo);font-size:.58rem;color:var(--green);
+  letter-spacing:1.5px;border:1px solid rgba(46,204,113,.35);
+  padding:5px 12px;border-radius:20px;
+  background:rgba(46,204,113,.08);
+  animation:pulseBorder 3s infinite;
+}
+@keyframes pulseBorder{0%,100%{border-color:rgba(46,204,113,.35)}50%{border-color:rgba(46,204,113,.7)}}
+
+.id-card h3{font-family:var(--hd);font-size:1.4rem;margin-bottom:4px;position:relative;z-index:1}
+.id-role{font-size:.75rem;color:var(--amber2);font-family:var(--mo);letter-spacing:1px;margin-bottom:20px;position:relative;z-index:1}
+.id-info{list-style:none;position:relative;z-index:1}
+.id-info li{
+  font-size:.8rem;color:rgba(240,235,225,.62);
+  padding:9px 0;border-bottom:1px solid rgba(240,235,225,.06);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.id-info li:last-child{border-bottom:none}
+.id-k{color:rgba(240,235,225,.28);font-size:.62rem;font-family:var(--mo);letter-spacing:1px}
+.id-v{color:rgba(240,235,225,.88);font-weight:500}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp {from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ MARQUEE ══ */
+.mq-wrap{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--ink);padding:15px 0;overflow:hidden;
+  transition:background .35s;
+}
+[data-theme="dark"] .mq-wrap{background:#0A0908}
+.mq-track{display:flex;animation:mq 28s linear infinite;width:max-content}
+.mq-item{font-family:var(--mo);font-size:.68rem;letter-spacing:2px;color:rgba(240,235,225,.3);text-transform:uppercase;padding:0 26px;white-space:nowrap}
+.mq-item span{color:var(--amber2);margin-right:26px}
+@keyframes mq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ══ SECTION COMMONS ══ */
+section{padding:110px 64px}
+.sl{font-family:var(--mo);font-size:.65rem;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sl::before{content:'';display:inline-block;width:24px;height:1px;background:var(--amber)}
+.st{font-family:var(--hd);font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-1px;color:var(--ink);margin-bottom:16px;line-height:1.05;transition:color .35s}
+.st em{font-style:italic;color:var(--amber)}
+.ss{font-size:.94rem;color:var(--muted);max-width:540px;line-height:1.9;margin-bottom:52px}
+
+/* ══ ABOUT ══ */
+#about{background:var(--bg2);transition:background .35s}
+.about-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:72px;align-items:start}
+.about-text p{font-size:.95rem;color:var(--ink2);line-height:1.95;margin-bottom:22px;transition:color .35s}
+.about-text p strong{color:var(--amber);font-weight:600}
+.about-text p em{font-style:italic}
+
+.val-list{display:flex;flex-direction:column;gap:14px}
+.val{
+  border:1px solid var(--border);border-radius:10px;
+  padding:22px 24px;background:var(--surface);
+  transition:border-color .25s,background .35s,transform .25s,box-shadow .25s;
+  cursor:default;
+}
+.val:hover{border-color:var(--amber);transform:translateX(6px);box-shadow:var(--shadow)}
+.val-ico{font-size:1.3rem;margin-bottom:8px;display:block}
+.val-title{font-family:var(--hd);font-size:.95rem;color:var(--ink);margin-bottom:5px;transition:color .35s}
+.val-desc{font-size:.78rem;color:var(--muted);line-height:1.65}
+
+/* ══ SKILLS ══ */
+#skills{background:var(--bg);transition:background .35s}
+.skills-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:20px}
+.s-wrap{display:flex;flex-wrap:wrap;gap:10px}
+.s{
+  font-family:var(--mo);font-size:.68rem;
+  padding:9px 17px;border-radius:6px;
+  border:1.5px solid var(--border);
+  background:var(--surface);color:var(--ink);
+  transition:all .2s;cursor:default;
+}
+.s:hover{background:var(--ink);color:var(--bg);border-color:var(--ink);transform:translateY(-2px);box-shadow:var(--shadow)}
+.s.hi{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.s.am{background:var(--amber);color:#fff;border-color:var(--amber)}
+[data-theme="dark"] .s.hi{background:rgba(240,235,225,.1);color:var(--ink);border-color:rgba(240,235,225,.15)}
+[data-theme="dark"] .s:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+
+/* ══ PROJECTS ══ */
+#projects{background:var(--bg2);transition:background .35s}
+.proj-list{display:flex;flex-direction:column;gap:4px}
+.prow{
+  display:grid;grid-template-columns:56px 1fr auto;
+  align-items:center;gap:30px;
+  padding:28px 32px;
+  border:1px solid var(--border);border-radius:10px;
+  background:var(--surface);
+  text-decoration:none;color:inherit;
+  transition:background .2s,transform .18s,border-color .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  cursor:default;
+}
+.prow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber);transform:scaleY(0);transform-origin:bottom;transition:transform .28s ease;border-radius:0 2px 2px 0}
+.prow:hover{background:var(--bg3);border-color:var(--amber);transform:translateX(5px);box-shadow:var(--shadow)}
+.prow:hover::before{transform:scaleY(1)}
+.prow.feat{background:var(--ink);border-color:var(--ink);color:#F0EBE1;cursor:pointer}
+.prow.feat::before{background:var(--amber2)}
+.prow.feat:hover{background:var(--ink2);border-color:var(--amber);box-shadow:var(--shadow-lg)}
+[data-theme="dark"] .prow{background:var(--bg3)}
+[data-theme="dark"] .prow.feat{background:#1E1B16;border-color:rgba(240,235,225,.15)}
+[data-theme="dark"] .prow.feat:hover{background:#252118}
+
+.pnum{font-family:var(--mo);font-size:.65rem;color:var(--muted);letter-spacing:1px}
+.prow.feat .pnum{color:rgba(240,235,225,.25)}
+.pname{font-family:var(--hd);font-size:1.18rem;letter-spacing:-.2px;margin-bottom:6px}
+.pdesc{font-size:.8rem;color:var(--muted);line-height:1.65}
+.prow.feat .pdesc{color:rgba(240,235,225,.45)}
+.ptags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:10px}
+.ptag{font-family:var(--mo);font-size:.57rem;padding:4px 10px;border-radius:4px;border:1px solid var(--border);color:var(--muted)}
+.prow.feat .ptag{border-color:rgba(240,235,225,.12);color:rgba(240,235,225,.35)}
+.parr{font-size:1.3rem;color:var(--amber);transition:transform .2s}
+.prow:hover .parr{transform:translateX(6px)}
+.pbadge{font-family:var(--mo);font-size:.57rem;letter-spacing:1.5px;background:var(--amber);color:#fff;padding:4px 10px;border-radius:4px;margin-left:10px}
+.psoon{font-family:var(--mo);font-size:.57rem;border:1px dashed var(--border);color:var(--muted);padding:4px 10px;border-radius:4px;margin-left:8px}
+
+/* ══ COLLABORATE ══ */
+#collaborate{background:var(--bg);transition:background .35s}
+.collab-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.collab-text p{font-size:.94rem;color:var(--muted);line-height:1.92;margin-bottom:18px}
+.collab-text p strong{color:var(--ink);transition:color .35s}
+.rules{display:flex;flex-direction:column;gap:12px;margin-top:26px}
+.rule{
+  display:flex;gap:16px;align-items:flex-start;
+  padding:18px 20px;
+  background:var(--surface);border-radius:10px;
+  border:1px solid var(--border);
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.rule:hover{border-color:var(--amber);transform:translateX(4px);box-shadow:var(--shadow)}
+.r-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.r-body{font-size:.8rem;color:var(--muted);line-height:1.6}
+.r-body strong{color:var(--ink);display:block;font-size:.84rem;margin-bottom:3px;transition:color .35s}
+
+.collab-card{
+  background:var(--ink);border-radius:14px;
+  padding:40px 36px;color:#F0EBE1;
+  box-shadow:var(--shadow-lg);
+  position:relative;overflow:hidden;
+  transition:background .35s,box-shadow .35s;
+}
+.collab-card::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(200,120,58,.1)}
+[data-theme="dark"] .collab-card{background:#1A1714}
+.cc-label{font-family:var(--mo);font-size:.6rem;letter-spacing:2.5px;color:var(--amber2);text-transform:uppercase;margin-bottom:22px;position:relative;z-index:1}
+.flow{font-family:var(--mo);font-size:.74rem;line-height:2.3;color:rgba(240,235,225,.38);position:relative;z-index:1}
+.flow .n{color:rgba(240,235,225,.16)}
+.flow .k{color:var(--amber2)}
+.flow .ok{color:var(--green)}
+.cc-foot{
+  margin-top:28px;padding-top:22px;
+  border-top:1px solid rgba(240,235,225,.07);
+  font-size:.75rem;color:rgba(240,235,225,.28);
+  line-height:1.9;position:relative;z-index:1;
+}
+.cc-foot a{color:rgba(240,235,225,.5);text-decoration:none;transition:color .2s}
+.cc-foot a:hover{color:var(--amber2)}
+
+/* ══ CONTACT ══ */
+#contact{background:var(--bg2);transition:background .35s}
+.contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:70px;align-items:start}
+.ci-list{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.ci{
+  display:flex;gap:15px;align-items:center;
+  padding:16px 20px;
+  border:1px solid var(--border);border-radius:10px;
+  background:var(--surface);
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.ci:hover{border-color:var(--amber);transform:translateX(4px);box-shadow:var(--shadow)}
+.ci-ico{font-size:1.2rem;width:36px;height:36px;background:var(--bg3);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .35s}
+.ci-lbl{font-family:var(--mo);font-size:.57rem;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
+.ci-val{font-size:.85rem;color:var(--ink);font-weight:500;transition:color .35s}
+.ci-val a{color:var(--amber);text-decoration:none;transition:color .2s}
+.ci-val a:hover{color:var(--amber2)}
+.c-note{
+  margin-top:22px;padding:18px 20px;
+  border-left:2.5px solid var(--amber);
+  background:rgba(200,120,58,.06);
+  border-radius:0 8px 8px 0;
+}
+.c-note p{font-size:.8rem;color:var(--muted);line-height:1.75}
+.c-note strong{color:var(--amber)}
+
+/* FORM */
+.cform{display:flex;flex-direction:column;gap:16px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-family:var(--mo);font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.field input,.field select,.field textarea{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:8px;padding:12px 15px;
+  font-family:var(--bd);font-size:.87rem;
+  color:var(--ink);outline:none;
+  transition:border-color .2s,background .35s,box-shadow .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--amber);
+  box-shadow:0 0 0 3px rgba(200,120,58,.12);
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted);opacity:.5}
+.field select{cursor:pointer;color:var(--ink)}
+.field textarea{resize:vertical;min-height:120px}
+.fsub{
+  background:var(--amber);color:#fff;
+  font-family:var(--bd);font-weight:600;font-size:.9rem;
+  padding:14px 34px;border:none;border-radius:8px;
+  cursor:pointer;
+  transition:background .2s,transform .15s,box-shadow .2s;
+  align-self:flex-start;
+  box-shadow:0 4px 16px rgba(200,120,58,.3);
+}
+.fsub:hover{background:var(--amber2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,120,58,.4)}
+.fsub:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.fst{font-size:.82rem;padding:12px 16px;border-radius:8px;display:none}
+.fst.ok {display:block;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:#27ae60}
+.fst.err{display:block;background:rgba(231,76,60,.1); border:1px solid rgba(231,76,60,.3); color:#c0392b}
+
+/* ══ FOOTER ══ */
+footer{
+  background:var(--ink);
+  border-top:1px solid rgba(240,235,225,.06);
+  padding:52px 64px;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:30px;
+  transition:background .35s;
+}
+[data-theme="dark"] footer{background:#0A0908}
+.f-left{}
+.f-brand-wrap{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:6px}
+.f-fre{font-family:var(--hd);font-size:1.1rem;color:#F0EBE1}
+.f-lrn{font-family:var(--hd);font-size:1.1rem;font-style:italic;color:var(--amber)}
+.f-tag{font-size:.68rem;color:rgba(240,235,225,.25);font-family:var(--mo);letter-spacing:1px}
+.f-links{display:flex;gap:28px;justify-content:center}
+.f-links a{font-size:.7rem;color:rgba(240,235,225,.28);text-decoration:none;font-family:var(--mo);letter-spacing:1px;transition:color .2s}
+.f-links a:hover{color:var(--amber)}
+.f-copy{font-size:.65rem;color:rgba(240,235,225,.12);font-family:var(--mo);text-align:right}
+
+/* ══ SCROLL REVEAL ══ */
+.rv {opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.rvl{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease}
+.rvr{opacity:0;transform:translateX(28px);transition:opacity .7s ease,transform .7s ease}
+.rv.on,.rvl.on,.rvr.on{opacity:1;transform:translate(0)}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+/* ══ MOBILE ══ */
+@media(max-width:960px){
+  nav{padding:16px 22px}
+  .nav-links{display:none}
+  section{padding:72px 22px}
+  #hero{grid-template-columns:1fr;padding:120px 22px 70px;gap:44px}
+  .about-grid,.collab-grid,.contact-grid{grid-template-columns:1fr;gap:40px}
+  .prow{grid-template-columns:44px 1fr}
+  .ptags,.parr{display:none}
+  footer{grid-template-columns:1fr;text-align:center;padding:40px 22px;gap:20px}
+  .f-links{justify-content:center}
+  .f-copy{text-align:center}
+  body{cursor:auto}
+  .cur,.cur-r{display:none}
+  .frow{grid-template-columns:1fr}
+  .hero-stats{gap:24px}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="cur"   id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="brand-logo">
+      <svg width="26" height="23" viewBox="0 0 70 62" xmlns="http://www.w3.org/2000/svg" style="border-radius:5px">
+        <rect width="70" height="62" rx="8" fill="url(#ng)"/>
+        <circle cx="62" cy="10" r="18" fill="rgba(255,255,255,.07)"/>
+        <path d="M35 11C35 11 23 26 23 35c0 6.6 5.4 12 12 12s12-5.4 12-12c0-9-12-24-12-24z" fill="rgba(255,255,255,.18)"/>
+        <path d="M35 18C35 18 27 30 27 36c0 4.4 3.6 8 8 8s8-3.6 8-8c0-6-8-18-8-18z" fill="rgba(255,255,255,.55)"/>
+        <defs><linearGradient id="ng" x1="0" y1="0" x2="70" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C8783A"/><stop offset="100%" stop-color="#903E0A"/></linearGradient></defs>
+      </svg>
+    </span>
+    <span class="brand-word"><span class="fre">Fre</span><span class="lrn">Learn</span></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#collaborate">Collaborate</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn" title="Toggle dark/light mode">
+      <span class="theme-icon sun">☀️</span>
+      <span class="theme-icon moon">🌙</span>
+    </button>
+    <a class="nav-gh" href="https://github.com/mpandaFredrick" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.4.6.1.82-.26.82-.57v-2c-3.34.73-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.3-1.23 3.3-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.68.83.57C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      github.com/mpandaFredrick
+    </a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-bg-orb orb1"></div>
+  <div class="hero-bg-orb orb2"></div>
+  <div class="hero-ring" style="width:580px;height:580px"></div>
+  <div class="hero-ring" style="width:380px;height:380px"></div>
+
+  <div>
+    <div class="hero-tag"><span class="live"></span>Open to collaboration</div>
+
+    <div class="hero-brand"><span class="fre">Fre</span><span class="lrn">Learn</span></div>
+    <div class="hero-by">A Developer Space · Dar es Salaam 🇹🇿</div>
+    <p class="hero-subtitle">Software Developer · Builder · Collaborator</p>
+
+    <p class="hero-desc">
+      A space where code meets community. Real software is built here, shared openly, and every developer is welcome to explore, contribute, and grow together — because the best engineers are shaped through collaboration, not isolation.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn-primary" href="#projects">See Projects</a>
+      <a class="btn-outline" href="#collaborate">Collaborate</a>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <span class="stat-num">3+</span>
+        <span class="stat-lbl">Projects</span>
+      </div>
+      <div>
+        <span class="stat-num">Full</span>
+        <span class="stat-lbl">Stack Dev</span>
+      </div>
+      <div>
+        <span class="stat-num">Open</span>
+        <span class="stat-lbl">To Collab</span>
+      </div>
+      <div>
+        <span class="stat-num">Daily</span>
+        <span class="stat-lbl">GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="id-card rvr">
+    <div class="id-top">
+      <div class="id-logo">
+        <svg width="62" height="56" viewBox="0 0 70 62" xmlns="http://www.w3.org/2000/svg">
+          <rect width="70" height="62" rx="8" fill="url(#lg)"/>
+          <circle cx="62" cy="10" r="20" fill="rgba(255,255,255,.07)"/>
+          <path d="M35 11C35 11 23 26 23 35c0 6.6 5.4 12 12 12s12-5.4 12-12c0-9-12-24-12-24z" fill="rgba(255,255,255,.18)"/>
+          <path d="M35 18C35 18 27 30 27 36c0 4.4 3.6 8 8 8s8-3.6 8-8c0-6-8-18-8-18z" fill="rgba(255,255,255,.56)"/>
+          <text x="20" y="56" font-family="Georgia,serif" font-style="italic" font-size="12" font-weight="700" fill="rgba(255,255,255,.85)" letter-spacing="1">FL</text>
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="70" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C8783A"/><stop offset="100%" stop-color="#903E0A"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div class="id-badge">● OPEN TO COLLAB</div>
+    </div>
+    <h3>FreLearn</h3>
+    <div class="id-role">Software Developer · Dar es Salaam 🇹🇿</div>
+    <ul class="id-info">
+      <li><span class="id-k">PLATFORM</span> <span class="id-v">FreLearn</span></li>
+      <li><span class="id-k">LOCATION</span> <span class="id-v">Dar es Salaam 🇹🇿</span></li>
+      <li><span class="id-k">STACK</span>    <span class="id-v">PHP · MySQL · JS</span></li>
+      <li><span class="id-k">GITHUB</span>   <span class="id-v"><a href="https://github.com/mpandaFredrick" target="_blank" style="color:var(--amber2);text-decoration:none">mpandaFredrick</a></span></li>
+      <li><span class="id-k">STATUS</span>   <span class="id-v" style="color:#2ECC71">● Building &amp; Learning</span></li>
+      <li><span class="id-k">EMAIL</span>    <span class="id-v" style="font-size:.71rem">fredrickmpanda655@gmail.com</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ══ -->
+<div class="mq-wrap">
+  <div class="mq-track">
+    <span class="mq-item">PHP<span>·</span></span><span class="mq-item">MySQL<span>·</span></span><span class="mq-item">JavaScript<span>·</span></span><span class="mq-item">HTML &amp; CSS<span>·</span></span><span class="mq-item">AJAX<span>·</span></span><span class="mq-item">Git &amp; GitHub<span>·</span></span><span class="mq-item">Database Design<span>·</span></span><span class="mq-item">System Analysis<span>·</span></span><span class="mq-item">Agile Development<span>·</span></span><span class="mq-item">3NF Normalization<span>·</span></span><span class="mq-item">UML Diagrams<span>·</span></span><span class="mq-item">Responsive Design<span>·</span></span>
+    <span class="mq-item">PHP<span>·</span></span><span class="mq-item">MySQL<span>·</span></span><span class="mq-item">JavaScript<span>·</span></span><span class="mq-item">HTML &amp; CSS<span>·</span></span><span class="mq-item">AJAX<span>·</span></span><span class="mq-item">Git &amp; GitHub<span>·</span></span><span class="mq-item">Database Design<span>·</span></span><span class="mq-item">System Analysis<span>·</span></span><span class="mq-item">Agile Development<span>·</span></span><span class="mq-item">3NF Normalization<span>·</span></span><span class="mq-item">UML Diagrams<span>·</span></span><span class="mq-item">Responsive Design<span>·</span></span>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="sl rv">About</div>
+  <h2 class="st rv">The Mind Behind <em>FreLearn</em></h2>
+  <p class="ss rv">Software development is not a destination — it's a continuous journey of building, breaking, learning, and improving.</p>
+
+  <div class="about-grid">
+    <div class="rvl">
+      <div class="about-text">
+        <p><strong>FreLearn</strong> is a developer space built on one belief — great software is never made alone. It is a platform where real systems are designed, built, and shared openly with developers from anywhere in the world.</p>
+        <p>The work here spans the full stack — from <strong>database architecture and backend logic</strong> to frontend interfaces and system integrations. Every project is approached with the same discipline: understand the problem deeply, design with intention, and build things that actually work.</p>
+        <p>The name says it all. <em>Fre</em> stands for the freedom to build openly and share without barriers. <em>Learn</em> is the commitment to never stop growing, no matter how experienced you become. <strong>FreLearn exists for both</strong> — for the developer behind it, and for every developer who lands here.</p>
+        <p><strong>Software built in isolation rarely becomes great.</strong> The best systems are shaped by many perspectives, many code reviews, and honest conversations. That is why collaboration sits at the core of everything here.</p>
+      </div>
+    </div>
+    <div class="val-list rv">
+      <div class="val">
+        <span class="val-ico">⚙️</span>
+        <div class="val-title">Engineer First</div>
+        <p class="val-desc">Every feature is considered from architecture, data flow, and scalability — not just what works today.</p>
+      </div>
+      <div class="val">
+        <span class="val-ico">🤝</span>
+        <div class="val-title">Collaboration is Core</div>
+        <p class="val-desc">Work is shared openly and other developers are actively welcomed in. Growth is faster together.</p>
+      </div>
+      <div class="val">
+        <span class="val-ico">🌍</span>
+        <div class="val-title">Built for Real Contexts</div>
+        <p class="val-desc">Systems built for real environments — mobile-first, locally relevant, designed for real users and real constraints.</p>
+      </div>
+      <div class="val">
+        <span class="val-ico">📅</span>
+        <div class="val-title">Daily GitHub Discipline</div>
+        <p class="val-desc">Code every day. Commit with purpose. Review others' work. The compound effect of daily practice builds great engineers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SKILLS ══ -->
+<section id="skills">
+  <div class="sl rv">Technical Skills</div>
+  <h2 class="st rv">What Gets <em>Used</em> Here</h2>
+  <p class="ss rv">A focused toolkit applied across every layer of the systems built on this platform.</p>
+  <div class="s-wrap rv">
+    <span class="s hi">PHP</span><span class="s hi">MySQL</span><span class="s hi">JavaScript</span>
+    <span class="s am">HTML5</span><span class="s am">CSS3</span>
+    <span class="s">AJAX</span><span class="s">WAMP Server</span><span class="s">Git</span><span class="s">GitHub</span>
+    <span class="s">Database Design</span><span class="s">3NF Normalization</span><span class="s">UML Diagrams</span>
+    <span class="s">System Analysis</span><span class="s">Agile / Scrum</span><span class="s">Responsive Design</span><span class="s">PHPMyAdmin</span>
+  </div>
+</section>
+
+<!-- ══ PROJECTS ══ -->
+<section id="projects">
+  <div class="sl rv">Work</div>
+  <h2 class="st rv">Projects <em>Built</em> Here</h2>
+  <p class="ss rv">Each project lives on GitHub — open for exploration, contribution, issues, and collaboration requests.</p>
+
+  <div class="proj-list rv">
+    <div class="prow feat">
+      <div class="pnum">01</div>
+      <div>
+        <div class="pname">Smart Water On-Demand Request &amp; Delivery System <span class="pbadge">Completed</span></div>
+        <p class="pdesc">A full-stack platform enabling campus and non-campus customers to request water deliveries online, pay via mobile money (Airtel, Tigo Pesa, Halopesa), and track orders live via AJAX — managed through an admin dashboard backed by a normalized MySQL database.</p>
+      </div>
+      <div>
+        <div class="ptags"><span class="ptag">PHP</span><span class="ptag">MySQL</span><span class="ptag">JavaScript</span><span class="ptag">AJAX</span></div>
+        <div class="parr">→</div>
+      </div>
+    </div>
+    <div class="prow feat">
+      <div class="pnum">02</div>
+      <div>
+        <div class="pname">Bee Farming Management &amp; Honey Production Tracking System <span class="pbadge">Latest</span></div>
+        <p class="pdesc">A web-based system for managing bee farm operations — tracking hive health, honey production cycles, harvest records, and farmer analytics through a structured dashboard backed by a relational database.</p>
+      </div>
+      <div>
+        <div class="ptags"><span class="ptag">PHP</span><span class="ptag">MySQL</span><span class="ptag">JavaScript</span><span class="ptag">CSS3</span></div>
+        <div class="parr">→</div>
+      </div>
+    </div>
+    <div class="prow" style="opacity:.3;pointer-events:none">
+      <div class="pnum">03</div>
+      <div>
+        <div class="pname">Post-Treatment Drug Relapse Monitoring System <span class="psoon">Planned</span></div>
+        <p class="pdesc">A healthcare-focused system for monitoring recovered patients after treatment — tracking follow-up schedules, behavioural indicators, and alerting medical personnel of relapse risk through a secure digital workflow.</p>
+      </div>
+      <div><div class="parr" style="color:var(--muted)">→</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COLLABORATE ══ -->
+<section id="collaborate">
+  <div class="sl rv">Open Collaboration</div>
+  <h2 class="st rv">Want to <em>Work Together?</em></h2>
+  <p class="ss rv">Every project is an open invitation. Contribute, review, learn from the code, or share your own work — the door is always open.</p>
+
+  <div class="collab-grid">
+    <div class="rvl">
+      <div class="collab-text">
+        <p><strong>FreLearn is built around collaboration.</strong> A number of projects are maintained on GitHub — some public, some private — and other developers are actively welcomed to interact with them. You don't need to be experienced. You need to be curious and willing to learn.</p>
+        <p>Whether you want to <strong>add a new feature</strong>, fix a bug, improve the database design, refactor code, or simply read through and ask questions — all of it is welcome and valued.</p>
+        <p>Equally open to <strong>reviewing your projects</strong>. If you're building something and want a second pair of eyes, a code review, or feedback — reach out. That kind of mutual learning is exactly what FreLearn is for.</p>
+      </div>
+      <div class="rules">
+        <div class="rule"><div class="r-ico">📩</div><div class="r-body"><strong>Request Collaboration Access</strong>Send a message stating which project interests you and how you'd like to contribute. A GitHub invitation follows.</div></div>
+        <div class="rule"><div class="r-ico">🌿</div><div class="r-body"><strong>Branch, Build &amp; Pull Request</strong>Create a feature branch, build your contribution, and open a PR for review. All skill levels are welcome.</div></div>
+        <div class="rule"><div class="r-ico">💬</div><div class="r-body"><strong>Open Issues &amp; Discussions</strong>Found something to improve? Have an idea? Open a GitHub Issue — even small observations make a real difference.</div></div>
+        <div class="rule"><div class="r-ico">🔁</div><div class="r-body"><strong>Share Your Own Project</strong>Have something you want reviewed or need a collaborator on? Reach out — happy to contribute back too.</div></div>
+      </div>
+    </div>
+
+    <div class="collab-card rvr">
+      <div class="cc-label">The Collaboration Flow</div>
+      <div class="flow">
+        <span class="n">01 /</span> <span class="k">Browse</span> projects on GitHub<br/>
+        <span class="n">02 /</span> <span class="k">Message</span> via the contact form below<br/>
+        <span class="n">03 /</span> <span class="k">Receive</span> your GitHub repository invitation<br/>
+        <span class="n">04 /</span> <span class="k">Clone</span> the repo to your local machine<br/>
+        <span class="n">05 /</span> <span class="k">Branch</span> off main → build your contribution<br/>
+        <span class="n">06 /</span> <span class="k">Push</span> &amp; open a Pull Request for review<br/>
+        <span class="n">07 /</span> <span class="k">Review</span> → discuss → refine → merge<br/>
+        <span class="n">08 /</span> <span class="ok">Repeat</span> — and keep growing together ✓
+      </div>
+      <div class="cc-foot">
+        🐙 <a href="https://github.com/mpandaFredrick" target="_blank">github.com/mpandaFredrick</a><br/>
+        📍 Dar es Salaam, Tanzania 🇹🇿<br/>
+        💼 Open to freelance &amp; remote opportunities
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="sl rv">Get In Touch</div>
+  <h2 class="st rv">Send a <em>Message</em></h2>
+  <p class="ss rv">Whether you want to collaborate, share your project, ask a question, or just say hello — every message gets a personal reply.</p>
+
+  <div class="contact-grid">
+    <div class="rvl">
+      <div class="ci-list">
+        <div class="ci"><div class="ci-ico">📧</div><div><div class="ci-lbl">Email</div><div class="ci-val"><a href="mailto:fredrickmpanda655@gmail.com">fredrickmpanda655@gmail.com</a></div></div></div>
+        <div class="ci"><div class="ci-ico">🐙</div><div><div class="ci-lbl">GitHub</div><div class="ci-val"><a href="https://github.com/mpandaFredrick" target="_blank">github.com/mpandaFredrick</a></div></div></div>
+        <div class="ci"><div class="ci-ico">📍</div><div><div class="ci-lbl">Location</div><div class="ci-val">Dar es Salaam, Tanzania 🇹🇿</div></div></div>
+        <div class="ci"><div class="ci-ico">⏱️</div><div><div class="ci-lbl">Response Time</div><div class="ci-val">Usually within 24 hours</div></div></div>
+      </div>
+      <div class="c-note">
+        <p><strong>Looking to collaborate?</strong> Tell me what you're interested in contributing, or what project you'd like reviewed. Every message gets a personal reply.</p>
+      </div>
+    </div>
+
+    <form class="cform rv" id="cform" action="https://formspree.io/f/xbdboeep" method="POST">
+      <div class="frow">
+        <div class="field"><label for="fn">Your Name</label><input id="fn" type="text" name="name" placeholder="e.g. John Mwamba" required/></div>
+        <div class="field"><label for="fe">Your Email</label><input id="fe" type="email" name="email" placeholder="you@example.com" required/></div>
+      </div>
+      <div class="field">
+        <label for="fr">Reason for Message</label>
+        <select id="fr" name="reason" required>
+          <option value="" disabled selected>Select a reason...</option>
+          <option value="collaborate">Collaborate on one of your projects</option>
+          <option value="share">Share my project with you</option>
+          <option value="access">Request access to a private repository</option>
+          <option value="review">Code review / feedback</option>
+          <option value="question">General question</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+      <div class="field"><label for="fg">Your GitHub Username (optional)</label><input id="fg" type="text" name="github" placeholder="github.com/yourname"/></div>
+      <div class="field"><label for="fm">Your Message</label><textarea id="fm" name="message" placeholder="Tell me what you have in mind — which project interests you, what you'd like to contribute, or just a hello..." required></textarea></div>
+      <div class="fst" id="fst"></div>
+      <button type="submit" class="fsub" id="fsub">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="f-left">
+    <a class="f-brand-wrap" href="#">
+      <svg width="22" height="20" viewBox="0 0 70 62" xmlns="http://www.w3.org/2000/svg" style="border-radius:4px">
+        <rect width="70" height="62" rx="8" fill="url(#fg2)"/>
+        <path d="M35 11C35 11 23 26 23 35c0 6.6 5.4 12 12 12s12-5.4 12-12c0-9-12-24-12-24z" fill="rgba(255,255,255,.18)"/>
+        <path d="M35 18C35 18 27 30 27 36c0 4.4 3.6 8 8 8s8-3.6 8-8c0-6-8-18-8-18z" fill="rgba(255,255,255,.55)"/>
+        <defs><linearGradient id="fg2" x1="0" y1="0" x2="70" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C8783A"/><stop offset="100%" stop-color="#903E0A"/></linearGradient></defs>
+      </svg>
+      <span class="f-fre">Fre</span><span class="f-lrn">Learn</span>
+    </a>
+    <div class="f-tag">Software Developer · Dar es Salaam · Tanzania 🇹🇿</div>
+  </div>
+  <div class="f-links">
+    <a href="https://github.com/mpandaFredrick" target="_blank">GitHub</a>
+    <a href="#projects">Projects</a>
+    <a href="#collaborate">Collaborate</a>
+    <a href="mailto:fredrickmpanda655@gmail.com">Email</a>
+  </div>
+  <div class="f-copy">© 2025 FreLearn · Built with purpose in 🇹🇿</div>
+</footer>
+
+<script>
+// ── Progress bar
+const prog=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement,s=h.scrollTop,t=h.scrollHeight-h.clientHeight;
+  prog.style.width=(s/t*100)+'%';
+});
+
+// ── Dark/Light toggle with localStorage memory
+const html=document.documentElement,btn=document.getElementById('themeBtn');
+const saved=localStorage.getItem('flTheme')||'light';
+html.setAttribute('data-theme',saved);
+btn.addEventListener('click',()=>{
+  const next=html.getAttribute('data-theme')==='light'?'dark':'light';
+  html.setAttribute('data-theme',next);
+  localStorage.setItem('flTheme',next);
+});
+
+// ── Custom cursor
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function tick(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.11;ry+=(my-ry)*.11;
+  curR.style.left=rx+'px';curR.style.top=ry+'px';
+  requestAnimationFrame(tick);
+})();
+document.querySelectorAll('a,button,.prow,.val,.rule,.ci').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.4)';curR.style.transform='translate(-50%,-50%) scale(1.6)'});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';curR.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+// ── Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
+},{threshold:.07});
+document.querySelectorAll('.rv,.rvl,.rvr').forEach(el=>obs.observe(el));
+
+// ── Contact form
+const form=document.getElementById('cform'),fst=document.getElementById('fst'),sbtn=document.getElementById('fsub');
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  sbtn.disabled=true;sbtn.textContent='Sending...';
+  fst.className='fst';
+  try{
+    const r=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    if(r.ok){fst.className='fst ok';fst.textContent='✓ Message sent! A reply will come within 24 hours. Thank you!';form.reset();}
+    else throw 0;
+  }catch{fst.className='fst err';fst.textContent='Something went wrong. Email directly: fredrickmpanda655@gmail.com';}
+  sbtn.disabled=false;sbtn.textContent='Send Message →';
+});
+</script>
+</body>
+</html>
